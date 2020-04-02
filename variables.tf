@@ -49,7 +49,7 @@ variable "users" {
   # - login_password_length:
   #   (Optional, default 20) The length of the generated password on resource creation. Only applies on resource creation. Drift detection is not possible with this argument.
   #
-  # - login_reset_required: 
+  # - login_reset_required:
   #   (Optional, default "true") Whether the user should be forced to reset the generated password on resource creation. Only applies on resource creation. Drift detection is not possible with this argument.
   #
   # - ssh_key_enabled:
@@ -59,7 +59,7 @@ variable "users" {
   #   Specifies the public key encoding format to use in the response. To retrieve the public key in ssh-rsa format, use SSH. To retrieve the public key in PEM format, use PEM.
   #   Required only when ssh_key_enabled is enabled.
   #
-  # - ssh_public_key: 
+  # - ssh_public_key:
   #   The SSH public key. The public key must be encoded in ssh-rsa format or PEM format.
   #   Required only when ssh_key_enabled is enabled.
   #

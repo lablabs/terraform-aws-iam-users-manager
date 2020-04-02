@@ -1,21 +1,21 @@
 locals {
   # helper for assembly group => users
   groups = distinct(flatten([
-    for user, attribute in var.users:
+    for user, attribute in var.users :
     try(attribute.groups, [])
   ]))
 
   # helper for assembly group => users
   user_group_normalization = {
-    for user, attribute in var.users:
+    for user, attribute in var.users :
     user => try(attribute.groups, [])
   }
 
   # Crate map of groups with their user association
   group_membership = {
-    for group in local.groups:
+    for group in local.groups :
     group => [
-      for user_name, user_groups in local.user_group_normalization:
+      for user_name, user_groups in local.user_group_normalization :
       user_name
       if contains(user_groups, group)
     ]
@@ -33,7 +33,7 @@ resource "aws_iam_user" "this" {
   path                 = lookup(each.value, "path", null)
   permissions_boundary = lookup(each.value, "permissions_boundary", null)
   force_destroy        = var.user_force_destroy
-  tags                 = merge(
+  tags = merge(
     module.label.tags,
     lookup(each.value, "additional_tags", {})
   )
@@ -41,14 +41,14 @@ resource "aws_iam_user" "this" {
 
 resource "aws_iam_access_key" "this" {
   for_each = {
-    for user, attributes in var.users:
+    for user, attributes in var.users :
     user => attributes
     if lookup(attributes, "access_key_enabled", false)
   }
 
-  user       = each.key
-  pgp_key    = each.value.pgp_key
-  status     = lookup(each.value, "access_key_status", null)
+  user    = each.key
+  pgp_key = each.value.pgp_key
+  status  = lookup(each.value, "access_key_status", null)
 
   depends_on = [
     aws_iam_user.this
@@ -57,7 +57,7 @@ resource "aws_iam_access_key" "this" {
 
 resource "aws_iam_user_login_profile" "this" {
   for_each = {
-    for user, attributes in var.users:
+    for user, attributes in var.users :
     user => attributes
     if lookup(attributes, "login_enabled", false)
   }
@@ -82,7 +82,7 @@ resource "aws_iam_user_login_profile" "this" {
 
 resource "aws_iam_user_ssh_key" "this" {
   for_each = {
-    for user, attributes in var.users:
+    for user, attributes in var.users :
     user => attributes
     if lookup(attributes, "ssh_key_enabled", false)
   }
@@ -99,7 +99,7 @@ resource "aws_iam_user_ssh_key" "this" {
 
 resource "aws_iam_user_policy_attachment" "this" {
   for_each = {
-    for user, attributes in var.users:
+    for user, attributes in var.users :
     user => attributes
     if lookup(attributes, "policy_arn", false)
   }
