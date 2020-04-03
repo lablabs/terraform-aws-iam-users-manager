@@ -64,8 +64,8 @@ resource "aws_iam_user_login_profile" "this" {
 
   user                    = each.key
   pgp_key                 = each.value.pgp_key
-  password_length         = lookup(each.value, "password_length", null)
-  password_reset_required = lookup(each.value, "password_reset_required", null)
+  password_length         = lookup(each.value, "login_password_length", null)
+  password_reset_required = lookup(each.value, "login_reset_required", null)
 
   depends_on = [
     aws_iam_user.this
