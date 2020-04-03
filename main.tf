@@ -1,24 +1,8 @@
 locals {
-  # helper for assembly group => users
-  groups = distinct(flatten([
+  user_groups = {
     for user, attribute in var.users :
-    try(attribute.groups, [])
-  ]))
-
-  # helper for assembly group => users
-  user_group_normalization = {
-    for user, attribute in var.users :
-    user => try(attribute.groups, [])
-  }
-
-  # Crate map of groups with their user association
-  group_membership = {
-    for group in local.groups :
-    group => [
-      for user_name, user_groups in local.user_group_normalization :
-      user_name
-      if contains(user_groups, group)
-    ]
+    user => attribute.groups
+    if length(lookup(attribute, "groups", [])) > 0 ? true : false
   }
 
   login_url = format("https://%s.signin.aws.amazon.com/console", data.aws_caller_identity.provider.account_id)
@@ -112,14 +96,9 @@ resource "aws_iam_user_policy_attachment" "this" {
   ]
 }
 
-resource "aws_iam_group_membership" "this" {
-  for_each = local.group_membership
+resource "aws_iam_user_group_membership" "this" {
+  for_each = local.user_groups
 
-  name  = format("%s-%s", module.label.id, each.key)
-  group = each.key
-  users = each.value
-
-  depends_on = [
-    aws_iam_user.this
-  ]
+  user   = each.key
+  groups = each.value
 }
