@@ -19,7 +19,7 @@ variable "tags" {
 
 variable "users" {
   description = "Map of the IAM users to be created with additional resources"
-  type        = map(any)
+  type        = any
 
   # Expected value for the `users` is a map of users. The map key is the name of the user and
   # the value is another map with several optional keys:
